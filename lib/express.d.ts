@@ -28,9 +28,10 @@ export declare class ExpressConnection<S> implements Connection<S> {
     readonly req: Request;
     readonly res: Response;
     readonly actions: Array<Action>;
+    readonly ended: boolean;
     readonly _S: S;
-    constructor(req: Request, res: Response, actions?: Array<Action>);
-    chain<T>(action: Action): ExpressConnection<T>;
+    constructor(req: Request, res: Response, actions?: Array<Action>, ended?: boolean);
+    chain<T>(action: Action, ended?: boolean): ExpressConnection<T>;
     getRequest(): IncomingMessage;
     getBody(): unknown;
     getHeader(name: string): unknown;
