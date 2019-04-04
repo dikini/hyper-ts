@@ -28,7 +28,7 @@ cannot be made. A few examples of such mistakes could be:
 
 # TypeScript compatibility
 
-The stable version is tested against TypeScript 3.3.4000, but should run with TypeScript 3.0.1+ too
+The stable version is tested against TypeScript 3.4.1, but should run with TypeScript 3.0.1+ too
 
 # Hello world
 
@@ -65,16 +65,34 @@ export interface Connection<S> {
   getQuery: () => unknown
   getOriginalUrl: () => string
   getMethod: () => string
-  setCookie: (name: string, value: string, options: CookieOptions) => Connection<S>
-  clearCookie: (name: string, options: CookieOptions) => Connection<S>
-  setHeader: (name: string, value: string) => Connection<S>
-  setStatus: <T>(status: Status) => Connection<T>
-  setBody: <T>(body: unknown) => Connection<T>
-  endResponse: <T>() => Connection<T>
+  setCookie: (
+    this: Connection<HeadersOpen>,
+    name: string,
+    value: string,
+    options: CookieOptions
+  ) => Connection<HeadersOpen>
+  clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>
+  setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>
+  setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>
+  setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>
+  endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>
 }
 ```
 
-`hyper-ts` exports a `Connection` for [express 4.x](http://expressjs.com/) from the `hyper-ts/lib/express` module.
+By default `hyper-ts` manages the following states:
+
+- `StatusOpen`: Type indicating that the status-line is ready to be sent
+- `HeadersOpen`: Type indicating that headers are ready to be sent, i.e. the body streaming has not been started
+- `BodyOpen`: Type indicating that headers have already been sent, and that the body is currently streaming
+- `ResponseEnded`: Type indicating that headers have already been sent, and that the body stream, and thus the response, is finished
+
+During the connection lifecycle the following flow is statically enforced
+
+```
+StatusOpen -> HeadersOpen -> BodyOpen -> ResponseEnded
+```
+
+**Note**. `hyper-ts` supports [express 4.x](http://expressjs.com/) by default by exporting a `Connection` instance from the `hyper-ts/lib/express` module.
 
 ## Middleware
 
