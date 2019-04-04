@@ -158,12 +158,9 @@ export declare const closeHeaders: Middleware<HeadersOpen, BodyOpen, never, void
 export declare function send(body: string): Middleware<BodyOpen, ResponseEnded, never, void>;
 /** Return a middleware that ends the response without sending any response body */
 export declare const end: Middleware<BodyOpen, ResponseEnded, never, void>;
-export declare type JSONObject = {
-    [key: string]: JSON;
-};
 export interface JSONArray extends Array<JSON> {
 }
-export declare type JSON = null | string | number | boolean | JSONArray | JSONObject;
+export declare type JSON = null | string | number | boolean | JSONArray | object;
 /** Return a middleware that sends `body` as JSON */
 export declare function json(body: JSON): Middleware<HeadersOpen, ResponseEnded, never, void>;
 /** Return a middleware that sends a redirect to `uri` */
