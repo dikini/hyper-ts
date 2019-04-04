@@ -55,7 +55,7 @@ export interface HeadersOpen {
 export interface BodyOpen {
     readonly BodyOpen: unique symbol;
 }
-/** Type indicating that headers have already been sent, and that the body stream, and thus the response, is finished. */
+/** Type indicating that headers have already been sent, and that the body stream, and thus the response, is finished */
 export interface ResponseEnded {
     readonly ResponseEnded: unique symbol;
 }
@@ -73,12 +73,12 @@ export interface Connection<S> {
     getQuery: () => unknown;
     getOriginalUrl: () => string;
     getMethod: () => string;
-    setCookie: (name: string, value: string, options: CookieOptions) => Connection<S>;
-    clearCookie: (name: string, options: CookieOptions) => Connection<S>;
-    setHeader: (name: string, value: string) => Connection<S>;
-    setStatus: <T>(status: Status) => Connection<T>;
-    setBody: <T>(body: unknown) => Connection<T>;
-    endResponse: <T>() => Connection<T>;
+    setCookie: (this: Connection<HeadersOpen>, name: string, value: string, options: CookieOptions) => Connection<HeadersOpen>;
+    clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>;
+    setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>;
+    setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>;
+    setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>;
+    endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>;
 }
 export declare function gets<I, L, A>(f: (c: Connection<I>) => A): Middleware<I, I, L, A>;
 export declare function fromConnection<I, L, A>(f: (c: Connection<I>) => Either<L, A>): Middleware<I, I, L, A>;

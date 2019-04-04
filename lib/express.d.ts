@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { Request, Response, RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import { IncomingMessage } from 'http';
-import { Connection, CookieOptions, Middleware, Status } from '.';
+import { Connection, CookieOptions, HeadersOpen, Middleware, ResponseEnded, Status } from '.';
 export declare type Action = {
     type: 'setBody';
     body: unknown;
@@ -38,12 +38,12 @@ export declare class ExpressConnection<S> implements Connection<S> {
     getQuery(): unknown;
     getOriginalUrl(): string;
     getMethod(): string;
-    setCookie<T>(name: string, value: string, options: CookieOptions): Connection<T>;
-    clearCookie<T>(name: string, options: CookieOptions): Connection<T>;
-    setHeader<T>(name: string, value: string): Connection<T>;
-    setStatus<T>(status: Status): Connection<T>;
-    setBody<T>(body: unknown): Connection<T>;
-    endResponse<T>(): Connection<T>;
+    setCookie(name: string, value: string, options: CookieOptions): ExpressConnection<HeadersOpen>;
+    clearCookie(name: string, options: CookieOptions): ExpressConnection<HeadersOpen>;
+    setHeader(name: string, value: string): ExpressConnection<HeadersOpen>;
+    setStatus(status: Status): ExpressConnection<HeadersOpen>;
+    setBody(body: unknown): ExpressConnection<ResponseEnded>;
+    endResponse(): ExpressConnection<ResponseEnded>;
 }
 export declare function fromMiddleware<I, O, L>(middleware: Middleware<I, O, L, void>): RequestHandler;
 export declare function toMiddleware<I, A>(requestHandler: RequestHandler, f: (req: Request) => A): Middleware<I, I, never, A>;
