@@ -31,6 +31,7 @@ export declare const Status: {
     NotFound: 404;
     MethodNotAllowed: 405;
     NotAcceptable: 406;
+    ServerError: 500;
 };
 export declare type Status = typeof Status[keyof typeof Status];
 export interface CookieOptions {
