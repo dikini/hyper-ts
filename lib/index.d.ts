@@ -132,6 +132,7 @@ export declare class Middleware<I, O, L, A> {
 }
 export declare function of<I, L, A>(a: A): Middleware<I, I, L, A>;
 export declare function iof<I, O, L, A>(a: A): Middleware<I, O, L, A>;
+export declare function tryCatch<I, L, A>(f: () => Promise<A>, onrejected: (reason: unknown) => L): Middleware<I, I, L, A>;
 export declare function fromTaskEither<I, L, A>(fa: TaskEither<L, A>): Middleware<I, I, L, A>;
 export declare function right<I, L, A>(fa: Task<A>): Middleware<I, I, L, A>;
 export declare function left<I, L, A>(fl: Task<L>): Middleware<I, I, L, A>;
