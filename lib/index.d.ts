@@ -126,7 +126,7 @@ export declare class Middleware<I, O, L, A> {
     /** Return a middleware that sends `body` as response body */
     send<I, L, A>(this: Middleware<I, BodyOpen, L, A>, body: string): Middleware<I, ResponseEnded, L, void>;
     /** Return a middleware that sends `body` as JSON */
-    json<I, L, A>(this: Middleware<I, HeadersOpen, L, A>, body: JSON): Middleware<I, ResponseEnded, L, void>;
+    json<I, L, A>(this: Middleware<I, HeadersOpen, L, A>, body: unknown, onError: (reason: unknown) => L): Middleware<I, ResponseEnded, L, void>;
     /** Return a middleware that ends the response without sending any response body */
     end<I, L, A>(this: Middleware<I, BodyOpen, L, A>): Middleware<I, ResponseEnded, L, void>;
 }
@@ -158,11 +158,8 @@ export declare const closeHeaders: Middleware<HeadersOpen, BodyOpen, never, void
 export declare function send(body: string): Middleware<BodyOpen, ResponseEnded, never, void>;
 /** Return a middleware that ends the response without sending any response body */
 export declare const end: Middleware<BodyOpen, ResponseEnded, never, void>;
-export interface JSONArray extends Array<JSON> {
-}
-export declare type JSON = null | string | number | boolean | JSONArray | object;
 /** Return a middleware that sends `body` as JSON */
-export declare function json(body: JSON): Middleware<HeadersOpen, ResponseEnded, never, void>;
+export declare function json<L>(body: unknown, onError: (reason: unknown) => L): Middleware<HeadersOpen, ResponseEnded, L, void>;
 /** Return a middleware that sends a redirect to `uri` */
 export declare function redirect(uri: string): Middleware<StatusOpen, HeadersOpen, never, void>;
 /** Returns a middleware that tries to decode `connection.getParams()[name]` */
