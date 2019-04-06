@@ -6,43 +6,44 @@ import { IOEither } from 'fp-ts/lib/IOEither';
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { IncomingMessage } from 'http';
-export declare enum MediaType {
-    applicationFormURLEncoded = "application/x-www-form-urlencoded",
-    applicationJSON = "application/json",
-    applicationJavascript = "application/javascript",
-    applicationOctetStream = "application/octet-stream",
-    applicationXML = "application/xml",
-    imageGIF = "image/gif",
-    imageJPEG = "image/jpeg",
-    imagePNG = "image/png",
-    multipartFormData = "multipart/form-data",
-    textCSV = "text/csv",
-    textHTML = "text/html",
-    textPlain = "text/plain",
-    textXML = "text/xml"
-}
+export declare const MediaType: {
+    readonly applicationFormURLEncoded: "application/x-www-form-urlencoded";
+    readonly applicationJSON: "application/json";
+    readonly applicationJavascript: "application/javascript";
+    readonly applicationOctetStream: "application/octet-stream";
+    readonly applicationXML: "application/xml";
+    readonly imageGIF: "image/gif";
+    readonly imageJPEG: "image/jpeg";
+    readonly imagePNG: "image/png";
+    readonly multipartFormData: "multipart/form-data";
+    readonly textCSV: "text/csv";
+    readonly textHTML: "text/html";
+    readonly textPlain: "text/plain";
+    readonly textXML: "text/xml";
+};
+export declare type MediaType = typeof MediaType[keyof typeof MediaType];
 export declare const Status: {
-    OK: 200;
-    Created: 201;
-    Found: 302;
-    BadRequest: 400;
-    Unauthorized: 401;
-    Forbidden: 403;
-    NotFound: 404;
-    MethodNotAllowed: 405;
-    NotAcceptable: 406;
-    ServerError: 500;
+    readonly OK: 200;
+    readonly Created: 201;
+    readonly Found: 302;
+    readonly BadRequest: 400;
+    readonly Unauthorized: 401;
+    readonly Forbidden: 403;
+    readonly NotFound: 404;
+    readonly MethodNotAllowed: 405;
+    readonly NotAcceptable: 406;
+    readonly ServerError: 500;
 };
 export declare type Status = typeof Status[keyof typeof Status];
 export interface CookieOptions {
-    expires?: Date;
-    domain?: string;
-    httpOnly?: boolean;
-    maxAge?: number;
-    path?: string;
-    sameSite?: boolean | 'strict' | 'lax';
-    secure?: boolean;
-    signed?: boolean;
+    readonly expires?: Date;
+    readonly domain?: string;
+    readonly httpOnly?: boolean;
+    readonly maxAge?: number;
+    readonly path?: string;
+    readonly sameSite?: boolean | 'strict' | 'lax';
+    readonly secure?: boolean;
+    readonly signed?: boolean;
 }
 /** Type indicating that the status-line is ready to be sent */
 export interface StatusOpen {
@@ -67,19 +68,19 @@ export interface ResponseEnded {
  */
 export interface Connection<S> {
     readonly _S: S;
-    getRequest: () => IncomingMessage;
-    getBody: () => unknown;
-    getHeader: (name: string) => unknown;
-    getParams: () => unknown;
-    getQuery: () => unknown;
-    getOriginalUrl: () => string;
-    getMethod: () => string;
-    setCookie: (this: Connection<HeadersOpen>, name: string, value: string, options: CookieOptions) => Connection<HeadersOpen>;
-    clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>;
-    setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>;
-    setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>;
-    setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>;
-    endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>;
+    readonly getRequest: () => IncomingMessage;
+    readonly getBody: () => unknown;
+    readonly getHeader: (name: string) => unknown;
+    readonly getParams: () => unknown;
+    readonly getQuery: () => unknown;
+    readonly getOriginalUrl: () => string;
+    readonly getMethod: () => string;
+    readonly setCookie: (this: Connection<HeadersOpen>, name: string, value: string, options: CookieOptions) => Connection<HeadersOpen>;
+    readonly clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>;
+    readonly setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>;
+    readonly setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>;
+    readonly setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>;
+    readonly endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>;
 }
 export declare function gets<I, L, A>(f: (c: Connection<I>) => A): Middleware<I, I, L, A>;
 export declare function fromConnection<I, L, A>(f: (c: Connection<I>) => Either<L, A>): Middleware<I, I, L, A>;
