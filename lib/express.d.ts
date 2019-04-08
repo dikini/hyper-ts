@@ -1,7 +1,19 @@
 /// <reference types="node" />
-import { Request, RequestHandler, Response } from 'express';
+import { Request, RequestHandler, ErrorRequestHandler, Response } from 'express';
 import { IncomingMessage } from 'http';
 import { Connection, CookieOptions, HeadersOpen, Middleware, ResponseEnded, Status } from '.';
+export declare type LinkedList<A> = {
+    type: 'Nil';
+    length: number;
+} | {
+    type: 'Cons';
+    head: A;
+    tail: LinkedList<A>;
+    length: number;
+};
+export declare const nil: LinkedList<never>;
+export declare const cons: <A>(head: A, tail: LinkedList<A>) => LinkedList<A>;
+export declare const toArray: <A>(list: LinkedList<A>) => A[];
 export declare type Action = {
     type: 'setBody';
     body: unknown;
@@ -27,10 +39,11 @@ export declare type Action = {
 export declare class ExpressConnection<S> implements Connection<S> {
     readonly req: Request;
     readonly res: Response;
-    readonly actions: Array<Action>;
+    readonly actions: LinkedList<Action>;
+    readonly ended: boolean;
     readonly _S: S;
-    constructor(req: Request, res: Response, actions?: Array<Action>);
-    chain<T>(action: Action): ExpressConnection<T>;
+    constructor(req: Request, res: Response, actions?: LinkedList<Action>, ended?: boolean);
+    chain<T>(action: Action, ended?: boolean): ExpressConnection<T>;
     getRequest(): IncomingMessage;
     getBody(): unknown;
     getHeader(name: string): unknown;
@@ -45,5 +58,6 @@ export declare class ExpressConnection<S> implements Connection<S> {
     setBody(body: unknown): ExpressConnection<ResponseEnded>;
     endResponse(): ExpressConnection<ResponseEnded>;
 }
-export declare function fromMiddleware<I, O, L>(middleware: Middleware<I, O, L, void>): RequestHandler;
-export declare function toMiddleware<I, A>(requestHandler: RequestHandler, f: (req: Request) => A): Middleware<I, I, never, A>;
+export declare function toRequestHandler<I, O, L>(middleware: Middleware<I, O, L, void>): RequestHandler;
+export declare function toErrorRequestHandler<I, O, L>(f: (err: unknown) => Middleware<I, O, L, void>): ErrorRequestHandler;
+export declare function fromRequestHandler<I, A>(requestHandler: RequestHandler, f: (req: Request) => A): Middleware<I, I, never, A>;
