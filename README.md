@@ -35,14 +35,14 @@ The stable version is tested against TypeScript 3.4.1, but should run with TypeS
 ```ts
 import * as express from 'express'
 import { Status, status } from 'hyper-ts'
-import { fromMiddleware } from 'hyper-ts/lib/express'
+import { toRequestHandler } from 'hyper-ts/lib/express'
 
 const hello = status(Status.OK) // writes the response status
   .closeHeaders() // tells hyper-ts that we're done with the headers
   .send('Hello hyper-ts on express!') // sends the response
 
 express()
-  .get('/', fromMiddleware(hello))
+  .get('/', toRequestHandler(hello))
   .listen(3000, () => console.log('Express listening on port 3000. Use: GET /'))
 ```
 
@@ -58,24 +58,24 @@ State changes are tracked by the phantom type `S`.
 ```ts
 export interface Connection<S> {
   readonly _S: S
-  getRequest: () => IncomingMessage
-  getBody: () => unknown
-  getHeader: (name: string) => unknown
-  getParams: () => unknown
-  getQuery: () => unknown
-  getOriginalUrl: () => string
-  getMethod: () => string
-  setCookie: (
+  readonly getRequest: () => IncomingMessage
+  readonly getBody: () => unknown
+  readonly getHeader: (name: string) => unknown
+  readonly getParams: () => unknown
+  readonly getQuery: () => unknown
+  readonly getOriginalUrl: () => string
+  readonly getMethod: () => string
+  readonly setCookie: (
     this: Connection<HeadersOpen>,
     name: string,
     value: string,
     options: CookieOptions
   ) => Connection<HeadersOpen>
-  clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>
-  setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>
-  setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>
-  setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>
-  endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>
+  readonly clearCookie: (this: Connection<HeadersOpen>, name: string, options: CookieOptions) => Connection<HeadersOpen>
+  readonly setHeader: (this: Connection<HeadersOpen>, name: string, value: string) => Connection<HeadersOpen>
+  readonly setStatus: (this: Connection<StatusOpen>, status: Status) => Connection<HeadersOpen>
+  readonly setBody: (this: Connection<BodyOpen>, body: unknown) => Connection<ResponseEnded>
+  readonly endResponse: (this: Connection<BodyOpen>) => Connection<ResponseEnded>
 }
 ```
 
@@ -119,12 +119,12 @@ Here is a simple example of a middleware called "myLogger". This function just p
 import * as express from 'express'
 import { log } from 'fp-ts/lib/Console'
 import { fromIO, StatusOpen } from 'hyper-ts'
-import { fromMiddleware } from 'hyper-ts/lib/express'
+import { toRequestHandler } from 'hyper-ts/lib/express'
 
 export const myLogger = fromIO<StatusOpen, StatusOpen, void>(log('LOGGED'))
 
 express()
-  .get('/', fromMiddleware(myLogger), (_, res) => {
+  .get('/', toRequestHandler(myLogger), (_, res) => {
     res.send('hello')
   })
   .listen(3000, () => console.log('Express listening on port 3000. Use: GET /'))
@@ -241,7 +241,7 @@ const middleware = decodeBody(t.string.decode)
 import * as express from 'express'
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString'
 import { fromLeft, Middleware, of, decodeParam, Status, status, StatusOpen, ResponseEnded } from 'hyper-ts'
-import { fromMiddleware } from 'hyper-ts/lib/express'
+import { toRequestHandler } from 'hyper-ts/lib/express'
 
 //
 // model
@@ -310,7 +310,7 @@ const sendError = (err: UserError): Middleware<StatusOpen, ResponseEnded, never,
 const user = getUser.orElse(sendError)
 
 express()
-  .get('/:user_id', fromMiddleware(user))
+  .get('/:user_id', toRequestHandler(user))
   .listen(3000, () => console.log('Express listening on port 3000. Use: GET /:user_id'))
 ```
 
